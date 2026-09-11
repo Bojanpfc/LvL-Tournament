@@ -1,178 +1,143 @@
-// Globalna inicijalizacija Supabase klijenta
-let db;
+// Inicijalizacija Supabase klijenta
+var db;
 
-try {
-  if (typeof supabase !== 'undefined' && supabase.createClient) {
-    db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-} catch (e) {
-  console.error("Greška pri inicijalizaciji Supabase-a:", e);
+if (typeof supabase !== 'undefined' && supabase.createClient) {
+  db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("login-form");
-  const adminContent = document.getElementById("admin-content");
-  const authSection = document.getElementById("auth-section");
-  const passwordInput = document.getElementById("admin-password");
-  const addPlayerForm = document.getElementById("add-player-form");
-  const playerList = document.getElementById("player-list");
-  const poolSizeEl = document.getElementById("pool-size");
-  const startBtn = document.getElementById("start-tournament-btn");
+document.addEventListener("DOMContentLoaded", function () {
+  var loginForm = document.getElementById("login-form");
+  var adminContent = document.getElementById("admin-content");
+  var authSection = document.getElementById("auth-section");
+  var passwordInput = document.getElementById("admin-password");
+  var addPlayerForm = document.getElementById("add-player-form");
+  var playerList = document.getElementById("player-list");
+  var poolSizeEl = document.getElementById("pool-size");
+  var startBtn = document.getElementById("start-tournament-btn");
 
-  // 1. Funkcija za učitavanje igrača
-  async function loadPlayers() {
-    if (!db) return;
-    try {
-      const { data, error } = await db.from("players").select("*").order("name");
-      if (error) throw error;
-
-      if (playerList) playerList.innerHTML = "";
-      if (poolSizeEl) poolSizeEl.textContent = data ? data.length : 0;
-
-      if (data && playerList) {
-        data.forEach((p) => {
-          const li = document.createElement("li");
-          li.style.display = "flex";
-          li.style.alignItems = "center";
-          li.style.gap = "10px";
-          li.style.marginBottom = "5px";
-
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.value = p.name;
-          cb.checked = true;
-          cb.className = "player-select-cb";
-
-          const span = document.createElement("span");
-          span.textContent = `${p.name} ${p.discord_id ? "(" + p.discord_id + ")" : ""}`;
-
-          li.appendChild(cb);
-          li.appendChild(span);
-          playerList.appendChild(li);
-        });
-      }
-    } catch (err) {
-      console.error("Greška pri učitavanju igrača:", err);
-    }
-  }
-
-  // 2. Funkcija za proveru da li postoji aktivan turnir
-  async function checkActiveTournament() {
-    if (!db) return;
-    try {
-      const { data, error } = await db
-        .from("tournaments")
-        .select("*")
-        .eq("status", "active")
-        .limit(1);
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        if (startBtn) {
-          startBtn.textContent = "TURNIR JE VEĆ U TOKU";
-          startBtn.style.backgroundColor = "#555";
-        }
-      } else {
-        if (startBtn) {
-          startBtn.textContent = "START TOURNAMENT";
-          startBtn.style.backgroundColor = "";
-        }
-      }
-    } catch (err) {
-      console.error("Greška pri proveri turnira:", err);
-    }
-  }
-
-  // 3. Logika za prijavu
+  // Prijava na admin panel
   if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
+    loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      const enteredPassword = passwordInput ? passwordInput.value.trim() : "";
-      const expectedPassword = typeof ADMIN_PASSWORD !== 'undefined' ? ADMIN_PASSWORD : "12345";
-
-      if (enteredPassword === expectedPassword) {
+      var entered = passwordInput ? passwordInput.value.trim() : "";
+      
+      if (entered === "12345") {
         if (authSection) authSection.style.display = "none";
         if (adminContent) adminContent.style.display = "block";
         loadPlayers();
-        checkActiveTournament();
       } else {
         alert("Netačna lozinka!");
       }
     });
   }
 
-  // 4. Logika za dodavanje igrača
+  // Učitavanje spiska igrača
+  function loadPlayers() {
+    if (!db) return;
+    
+    db.from("players").select("*").order("name").then(function (res) {
+      if (res.error) {
+        alert("Greška pri učitavanju: " + res.error.message);
+        return;
+      }
+      
+      var data = res.data || [];
+      if (playerList) playerList.innerHTML = "";
+      if (poolSizeEl) poolSizeEl.textContent = data.length;
+
+      data.forEach(function (p) {
+        var li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.alignItems = "center";
+        li.style.gap = "10px";
+        li.style.marginBottom = "5px";
+
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = p.name;
+        cb.checked = true;
+        cb.className = "player-select-cb";
+
+        var span = document.createElement("span");
+        span.textContent = p.name + (p.discord_id ? " (" + p.discord_id + ")" : "");
+
+        li.appendChild(cb);
+        li.appendChild(span);
+        if (playerList) playerList.appendChild(li);
+      });
+    });
+  }
+
+  // Dodavanje igrača
   if (addPlayerForm) {
-    addPlayerForm.addEventListener("submit", async (e) => {
+    addPlayerForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      const nameInput = document.getElementById("player-name");
-      const discordInput = document.getElementById("discord-id");
-      const errorEl = document.getElementById("add-player-error");
+      var nameInput = document.getElementById("player-name");
+      var discordInput = document.getElementById("discord-id");
 
-      if (errorEl) errorEl.textContent = "";
-
-      const name = nameInput ? nameInput.value.trim() : "";
-      const discord_id = discordInput ? discordInput.value.trim() : "";
+      var name = nameInput ? nameInput.value.trim() : "";
+      var discord_id = discordInput ? discordInput.value.trim() : "";
 
       if (!name) {
         alert("Unesi ime igrača!");
         return;
       }
 
-      try {
-        const { error } = await db.from("players").insert([{ name, discord_id }]);
-        if (error) throw error;
-
-        if (nameInput) nameInput.value = "";
-        if (discordInput) discordInput.value = "";
-        loadPlayers();
-      } catch (err) {
-        if (errorEl) {
-          errorEl.textContent = err.message || "Greška pri dodavanju.";
-        } else {
-          alert("Greška: " + err.message);
-        }
-      }
-    });
-  }
-
-  // 5. Logika za pokretanje turnira
-  if (startBtn) {
-    startBtn.addEventListener("click", async () => {
-      const checkedBoxes = document.querySelectorAll(".player-select-cb:checked");
-      const selectedPlayers = Array.from(checkedBoxes).map(cb => cb.value);
-
-      if (selectedPlayers.length < 2) {
-        alert("Moraš izabrati bar 2 igrača za turnir!");
+      if (!db) {
+        alert("Baza nije povezana!");
         return;
       }
 
-      const shuffled = [...selectedPlayers].sort(() => 0.5 - Math.random());
-      const matches = [];
-      for (let i = 0; i < shuffled.length; i += 2) {
+      db.from("players").insert([{ name: name, discord_id: discord_id }]).then(function (res) {
+        if (res.error) {
+          alert("Greška iz baze: " + res.error.message);
+        } else {
+          if (nameInput) nameInput.value = "";
+          if (discordInput) discordInput.value = "";
+          loadPlayers();
+        }
+      });
+    });
+  }
+
+  // Pokretanje turnira
+  if (startBtn) {
+    startBtn.addEventListener("click", function () {
+      var checked = document.querySelectorAll(".player-select-cb:checked");
+      var selected = [];
+      
+      checked.forEach(function (cb) {
+        selected.push(cb.value);
+      });
+
+      if (selected.length < 2) {
+        alert("Moraš izabrati bar 2 igrača!");
+        return;
+      }
+
+      var shuffled = selected.slice().sort(function () { return 0.5 - Math.random(); });
+      var matches = [];
+
+      for (var i = 0; i < shuffled.length; i += 2) {
         if (i + 1 < shuffled.length) {
-          matches.push({ player1: shuffled[i], player2: shuffled[i+1], score1: null, score2: null });
+          matches.push({ player1: shuffled[i], player2: shuffled[i + 1], score1: null, score2: null });
         } else {
           matches.push({ player1: shuffled[i], player2: "BYE", score1: null, score2: null });
         }
       }
 
-      try {
-        const { error } = await db.from("tournaments").insert([{
-          name: "Tournament " + new Date().toLocaleDateString('sr-RS'),
-          status: "active",
-          players: selectedPlayers,
-          bracket: matches
-        }]);
-
-        if (error) throw error;
-
-        alert("Turnir je uspešno pokrenut!");
-        checkActiveTournament();
-      } catch (err) {
-        alert("Greška pri pokretanju turnira: " + err.message);
-      }
+      db.from("tournaments").insert([{
+        name: "Turnir " + new Date().toLocaleDateString('sr-RS'),
+        status: "active",
+        players: selected,
+        bracket: matches
+      }]).then(function (res) {
+        if (res.error) {
+          alert("Greška pri pokretanju: " + res.error.message);
+        } else {
+          alert("Turnir je uspešno pokrenut!");
+        }
+      });
     });
   }
 });
