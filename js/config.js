@@ -9,7 +9,7 @@ const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE";
 // The password you'll type to unlock the admin panel. Change this to
 // anything you want — it is NOT a secure login system, just a simple
 // gate to keep casual visitors out of the admin page (see SETUP.md).
-const ADMIN_PASSWORD = "changeme123";
+const ADMIN_PASSWORD = "12345";
 
 // Optional: a Discord webhook URL for the "remind players" button.
 // Server Settings → Integrations → Webhooks → New Webhook → Copy URL.
