@@ -4,7 +4,7 @@
 
 // From Supabase: Project Settings → API
 const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE";
+const SUPABASE_ANON_KEY = "sb_publishable_ZjDXcOzgg9elVPoisKWAgA_fo-SPUSZ";
 
 // The password you'll type to unlock the admin panel. Change this to
 // anything you want — it is NOT a secure login system, just a simple
