@@ -1,81 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — FC Mobile Tournament Tracker</title>
+  <title>Admin Panel - Tournament Tracker</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- Supabase JS Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="wrap">
-    <nav class="tabs">
-      <a href="index.html">Home</a>
-      <a href="submit.html">Submit Result</a>
-      <a href="ranking.html">Ranking</a>
-      <a href="results.html">Results</a>
-      <a href="admin.html" class="active">Admin</a>
-    </nav>
+  <nav class="navbar">
+    <a href="index.html">HOME</a>
+    <a href="submit.html">SUBMIT RESULT</a>
+    <a href="ranking.html">RANKING</a>
+    <a href="results.html">RESULTS</a>
+    <a href="admin.html" class="active">ADMIN</a>
+  </nav>
 
-    <!-- LOGIN GATE -->
-    <div class="panel" id="loginPanel">
-      <div class="eyebrow">Admin Access</div>
-      <h1>Enter Admin Password</h1>
-      <input type="password" id="passwordInput" placeholder="Password">
-      <button onclick="tryLogin()">Unlock</button>
-      <div id="loginMsg"></div>
+  <main class="container">
+    <h1>FC Mobile Tournament Tracker</h1>
+
+    <!-- Forma za prijavu -->
+    <div id="auth-section" class="card">
+      <h2>Admin Login</h2>
+      <form id="login-form">
+        <input type="password" id="admin-password" placeholder="Unesite lozinku..." required style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
+        <button type="submit" class="btn" style="width: 100%;">PRIJAVI SE</button>
+      </form>
     </div>
 
-    <!-- ADMIN CONTENT (hidden until unlocked) -->
-    <div id="adminContent" style="display:none;">
-
-      <div class="panel">
-        <div class="eyebrow">Step 1</div>
+    <!-- Admin Sadržaj -->
+    <div id="admin-content" style="display: none;">
+      
+      <!-- STEP 1: Player Pool -->
+      <div class="card">
+        <h3>STEP 1</h3>
         <h2>Player Pool</h2>
-        <p class="hint">Add every player who might take part. You'll pick 32 of them when you start a tournament.</p>
-        <label for="newPlayerName">Player name</label>
-        <input type="text" id="newPlayerName" placeholder="e.g. Marko">
-        <label for="newPlayerDiscord">Discord ID (optional, needed for reminders)</label>
-        <input type="text" id="newPlayerDiscord" placeholder="e.g. 123456789012345678">
-        <button onclick="addPlayer()">Add Player</button>
-        <div id="addPlayerMsg"></div>
-        <div style="margin-top:18px;">
-          <span class="hint">Pool size: <span id="poolCount" class="counter">0</span></span>
-          <table id="poolTable" style="margin-top:6px;">
-            <thead><tr><th>Name</th><th>Discord ID</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <p>Add every player who might take part.</p>
+
+        <form id="add-player-form">
+          <label>Player name</label>
+          <input type="text" id="player-name" placeholder="Ime igrača" required style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
+
+          <label>Discord ID (optional)</label>
+          <input type="text" id="discord-id" placeholder="npr. 123456789012345678" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
+
+          <button type="submit" class="btn">ADD PLAYER</button>
+        </form>
+
+        <p style="margin-top: 15px;">Pool size: <strong id="pool-size">0</strong></p>
+        <ul id="player-list" style="list-style: none; padding: 0;"></ul>
       </div>
 
-      <div class="panel" id="startPanel">
-        <div class="eyebrow">Step 2</div>
-        <h2>Start a Tournament</h2>
-        <p class="hint">Select exactly 32 players from the pool below, then start.</p>
-        <p>Selected: <span id="selectedCount" class="counter">0</span> / 32</p>
-        <div id="playerCheckboxes"></div>
-        <button id="startBtn" onclick="startTournament()" disabled>Start Tournament</button>
-        <div id="startMsg"></div>
-      </div>
-
-      <div class="panel" id="activePanel" style="display:none;">
-        <div class="eyebrow">Live</div>
-        <h2>Current Tournament</h2>
-        <p class="hint">Submitted: <span id="submittedCount" class="counter">0</span> / 32</p>
-        <table id="statusTable">
-          <thead><tr><th>Player</th><th>Status</th><th class="num">Goals</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <button onclick="remindPlayers()">Remind Players Who Haven't Submitted (Discord)</button>
-        <button class="danger" onclick="endTournament()">End Tournament</button>
-        <div id="activeMsg"></div>
+      <!-- STEP 2: Start Tournament -->
+      <div class="card" style="margin-top: 20px;">
+        <h3>STEP 2</h3>
+        <button id="start-tournament-btn" class="btn" style="width: 100%;">START TOURNAMENT</button>
       </div>
 
     </div>
-  </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
-  <script src="js/supabase-client.js"></script>
-  <script src="js/admin.js"></script>
+  <!-- Verzionisanje JS fajlova tera pretraživač da osveži kôd -->
+  <script src="js/config.js?v=2"></script>
+  <script src="js/admin.js?v=2"></script>
 </body>
 </html>
