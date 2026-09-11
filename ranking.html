@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking — FC Mobile Tournament Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="tabs">
+      <a href="index.html">Home</a>
+      <a href="submit.html">Submit Result</a>
+      <a href="ranking.html" class="active">Ranking</a>
+      <a href="results.html">Results</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+
+    <div class="panel">
+      <div class="eyebrow">All-Time</div>
+      <h1>Leaderboard</h1>
+      <p class="hint">Total goals scored across every tournament.</p>
+      <table id="rankingTable">
+        <thead><tr><th>#</th><th>Player</th><th class="num">Tournaments</th><th class="num">Total Goals</th></tr></thead>
+        <tbody><tr><td colspan="4" class="hint">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
+    <footer>FC Mobile Tournament Tracker</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/ranking.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results — FC Mobile Tournament Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="tabs">
+      <a href="index.html">Home</a>
+      <a href="submit.html">Submit Result</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="results.html" class="active">Results</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+
+    <div class="panel">
+      <div class="eyebrow">Scoreboard</div>
+      <h1>Tournament Results</h1>
+      <label for="tournamentSelect">Tournament</label>
+      <select id="tournamentSelect" onchange="loadResults()"></select>
+      <table id="resultsTable" style="margin-top:16px;">
+        <thead><tr><th>#</th><th>Player</th><th class="num">Goals</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <footer>FC Mobile Tournament Tracker</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>

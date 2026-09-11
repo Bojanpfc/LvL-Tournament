@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Result — FC Mobile Tournament Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="tabs">
+      <a href="index.html">Home</a>
+      <a href="submit.html" class="active">Submit Result</a>
+      <a href="ranking.html">Ranking</a>
+      <a href="results.html">Results</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+
+    <div class="panel" id="noTournamentPanel" style="display:none;">
+      <h1>No Tournament Running</h1>
+      <p class="hint">There's no active tournament right now. Check back once the admin starts one.</p>
+    </div>
+
+    <div class="panel" id="formPanel" style="display:none;">
+      <div class="eyebrow">Submit Your Result</div>
+      <h1>Enter Your Goals</h1>
+      <p class="hint">Pick your name and enter how many goals you scored. You can only submit once per tournament — double-check before sending.</p>
+
+      <label for="playerSelect">Your Name</label>
+      <select id="playerSelect"></select>
+
+      <label for="goalsInput">Goals Scored</label>
+      <input type="number" id="goalsInput" min="0" placeholder="e.g. 14">
+
+      <button id="submitBtn" onclick="submitResult()">Submit Result</button>
+      <div id="submitMsg"></div>
+    </div>
+
+    <footer>FC Mobile Tournament Tracker</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/submit.js"></script>
+</body>
+</html>
