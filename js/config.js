@@ -3,7 +3,7 @@
 // ------------------------------------------------------------------
 
 // From Supabase: Project Settings → API
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_URL = "https://glnhghwxfxydqijcynst.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_ZjDXcOzgg9elVPoisKWAgA_fo-SPUSZ";
 
 // The password you'll type to unlock the admin panel. Change this to
