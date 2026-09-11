@@ -1,4 +1,4 @@
-// Inicijalizacija Supabase klijenta
+// Globalna inicijalizacija Supabase klijenta
 let db;
 
 try {
@@ -19,22 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const poolSizeEl = document.getElementById("pool-size");
   const startBtn = document.getElementById("start-tournament-btn");
 
-  // Prijava
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (passwordInput.value === ADMIN_PASSWORD) {
-        authSection.style.display = "none";
-        adminContent.style.display = "block";
-        loadPlayers();
-        checkActiveTournament();
-      } else {
-        alert("Netačna lozinka!");
-      }
-    });
-  }
-
-  // Učitavanje igrača sa štampanjem checkbox-a
+  // 1. Funkcija za učitavanje igrača
   async function loadPlayers() {
     if (!db) return;
     try {
@@ -71,31 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Dodavanje igrača
-  if (addPlayerForm) {
-    addPlayerForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nameInput = document.getElementById("player-name");
-      const discordInput = document.getElementById("discord-id");
-      const name = nameInput.value.trim();
-      const discord_id = discordInput.value.trim();
-
-      if (!name) return;
-
-      try {
-        const { error } = await db.from("players").insert([{ name, discord_id }]);
-        if (error) throw error;
-
-        nameInput.value = "";
-        discordInput.value = "";
-        loadPlayers();
-      } catch (err) {
-        alert(err.message || "Greška pri dodavanju.");
-      }
-    });
-  }
-
-  // Provera aktivnog turnira
+  // 2. Funkcija za proveru da li postoji aktivan turnir
   async function checkActiveTournament() {
     if (!db) return;
     try {
@@ -119,11 +80,64 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     } catch (err) {
-      console.error("Greška pri proveri:", err);
+      console.error("Greška pri proveri turnira:", err);
     }
   }
 
-  // Pokretanje novog turnira
+  // 3. Logika za prijavu
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const enteredPassword = passwordInput ? passwordInput.value.trim() : "";
+      const expectedPassword = typeof ADMIN_PASSWORD !== 'undefined' ? ADMIN_PASSWORD : "12345";
+
+      if (enteredPassword === expectedPassword) {
+        if (authSection) authSection.style.display = "none";
+        if (adminContent) adminContent.style.display = "block";
+        loadPlayers();
+        checkActiveTournament();
+      } else {
+        alert("Netačna lozinka!");
+      }
+    });
+  }
+
+  // 4. Logika za dodavanje igrača
+  if (addPlayerForm) {
+    addPlayerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById("player-name");
+      const discordInput = document.getElementById("discord-id");
+      const errorEl = document.getElementById("add-player-error");
+
+      if (errorEl) errorEl.textContent = "";
+
+      const name = nameInput ? nameInput.value.trim() : "";
+      const discord_id = discordInput ? discordInput.value.trim() : "";
+
+      if (!name) {
+        alert("Unesi ime igrača!");
+        return;
+      }
+
+      try {
+        const { error } = await db.from("players").insert([{ name, discord_id }]);
+        if (error) throw error;
+
+        if (nameInput) nameInput.value = "";
+        if (discordInput) discordInput.value = "";
+        loadPlayers();
+      } catch (err) {
+        if (errorEl) {
+          errorEl.textContent = err.message || "Greška pri dodavanju.";
+        } else {
+          alert("Greška: " + err.message);
+        }
+      }
+    });
+  }
+
+  // 5. Logika za pokretanje turnira
   if (startBtn) {
     startBtn.addEventListener("click", async () => {
       const checkedBoxes = document.querySelectorAll(".player-select-cb:checked");
@@ -134,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Mešanje igrača
       const shuffled = [...selectedPlayers].sort(() => 0.5 - Math.random());
       const matches = [];
       for (let i = 0; i < shuffled.length; i += 2) {
