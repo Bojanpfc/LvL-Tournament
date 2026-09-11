@@ -1,1 +1,164 @@
+/* ---------------------------------------------------------------
+   FC Mobile Tournament Tracker
+   Design concept: a matchday scoreboard — deep turf-green and near
+   black panels, tabular numerals for scores, a single gold accent
+   reserved for rank #1 and live status. Condensed display type for
+   headings (scoreboard lettering), clean grotesk for body/UI text.
+   ----------------------------------------------------------------*/
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@600&display=swap');
+
+:root {
+  --bg: #0e1512;
+  --panel: #161f1b;
+  --panel-border: #263129;
+  --turf: #2f9e44;
+  --turf-bright: #4bc766;
+  --gold: #e8b923;
+  --ink: #e9efe9;
+  --ink-dim: #9fb0a6;
+  --red: #d64545;
+  --radius: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  background-image:
+    linear-gradient(var(--panel-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--panel-border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-attachment: fixed;
+  background-position: center;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.4em 0;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.35rem; color: var(--turf-bright); }
+
+a { color: var(--turf-bright); }
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 18px 64px;
+}
+
+/* --- top nav --- */
+nav.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--panel-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+nav.tabs a {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  background: var(--panel);
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+nav.tabs a.active {
+  background: var(--turf);
+  color: #0e1512;
+  font-weight: 600;
+}
+
+/* --- panels / cards --- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-top: 3px solid var(--turf);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.panel + .panel { margin-top: 20px; }
+
+.eyebrow {
+  color: var(--turf-bright);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.hint { color: var(--ink-dim); font-size: 0.88rem; line-height: 1.5; }
+
+/* --- form elements --- */
+label { display: block; font-size: 0.85rem; color: var(--ink-dim); margin: 14px 0 5px; }
+input[type="text"], input[type="password"], input[type="number"], select {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0e1512;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+}
+input:focus, select:focus {
+  outline: 2px solid var(--turf);
+  outline-offset: 1px;
+}
+
+button {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: var(--turf);
+  color: #0e1512;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+button:hover { background: var(--turf-bright); }
+button:disabled { background: #3a473d; color: var(--ink-dim); cursor: not-allowed; }
+button.secondary { background: transparent; border: 1px solid var(--panel-border); color: var(--ink); }
+button.danger { background: var(--red); color: #fff; }
+
+/* --- tables --- */
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--panel-border); font-size: 0.92rem; }
+th { color: var(--ink-dim); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+td.num, th.num { text-align: right; font-family: 'Roboto Mono', monospace; }
+
+.rank-1 td.num, .rank-1 td:first-child { color: var(--gold); }
+
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status-dot.done { background: var(--turf-bright); }
+.status-dot.pending { background: var(--red); }
+
+.checkbox-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--panel-border); font-size: 0.92rem; }
+.checkbox-row input { width: auto; }
+
+.msg { padding: 10px 12px; border-radius: 4px; font-size: 0.88rem; margin-top: 12px; }
+.msg.ok { background: rgba(75, 199, 102, 0.12); border: 1px solid var(--turf); color: var(--turf-bright); }
+.msg.err { background: rgba(214, 69, 69, 0.12); border: 1px solid var(--red); color: #f19c9c; }
+
+.counter { font-family: 'Roboto Mono', monospace; color: var(--gold); }
+
+footer { text-align: center; color: var(--ink-dim); font-size: 0.78rem; margin-top: 40px; }
