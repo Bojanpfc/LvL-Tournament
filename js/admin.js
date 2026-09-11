@@ -1,4 +1,4 @@
-// Globalna inicijalizacija Supabase klijenta
+// Inicijalizacija Supabase klijenta
 let db;
 
 try {
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const poolSizeEl = document.getElementById("pool-size");
   const startBtn = document.getElementById("start-tournament-btn");
 
-  // Provera lozinke
+  // Prijava
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Učitavanje igrača u pool
+  // Učitavanje igrača sa štampanjem checkbox-a
   async function loadPlayers() {
     if (!db) return;
     try {
@@ -47,7 +47,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data && playerList) {
         data.forEach((p) => {
           const li = document.createElement("li");
-          li.textContent = `${p.name} ${p.discord_id ? "(" + p.discord_id + ")" : ""}`;
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.gap = "10px";
+          li.style.marginBottom = "5px";
+
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.value = p.name;
+          cb.checked = true;
+          cb.className = "player-select-cb";
+
+          const span = document.createElement("span");
+          span.textContent = `${p.name} ${p.discord_id ? "(" + p.discord_id + ")" : ""}`;
+
+          li.appendChild(cb);
+          li.appendChild(span);
           playerList.appendChild(li);
         });
       }
@@ -56,15 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Dodavanje novog igrača
+  // Dodavanje igrača
   if (addPlayerForm) {
     addPlayerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const nameInput = document.getElementById("player-name");
       const discordInput = document.getElementById("discord-id");
-      const errorEl = document.getElementById("add-player-error");
-
-      if (errorEl) errorEl.textContent = "";
       const name = nameInput.value.trim();
       const discord_id = discordInput.value.trim();
 
@@ -78,12 +90,12 @@ document.addEventListener("DOMContentLoaded", () => {
         discordInput.value = "";
         loadPlayers();
       } catch (err) {
-        if (errorEl) errorEl.textContent = err.message || "Greška pri upisu u bazu.";
+        alert(err.message || "Greška pri dodavanju.");
       }
     });
   }
 
-  // Provera da li već postoji aktivan turnir
+  // Provera aktivnog turnira
   async function checkActiveTournament() {
     if (!db) return;
     try {
@@ -91,30 +103,63 @@ document.addEventListener("DOMContentLoaded", () => {
         .from("tournaments")
         .select("*")
         .eq("status", "active")
-        .order("created_at", { ascending: false })
         .limit(1);
 
       if (error) throw error;
 
-      const activeStatusEl = document.getElementById("active-tournament-status");
-      
       if (data && data.length > 0) {
         if (startBtn) {
-          startBtn.disabled = true;
-          startBtn.textContent = "TURNIR JE U TOKU";
-        }
-        if (activeStatusEl) {
-          activeStatusEl.style.display = "block";
-          activeStatusEl.innerHTML = `<p style="color:#00ff66;"><strong>Aktivan turnir:</strong> ${data[0].name}</p>`;
+          startBtn.textContent = "TURNIR JE VEĆ U TOKU";
+          startBtn.style.backgroundColor = "#555";
         }
       } else {
         if (startBtn) {
-          startBtn.disabled = false;
           startBtn.textContent = "START TOURNAMENT";
+          startBtn.style.backgroundColor = "";
         }
       }
     } catch (err) {
-      console.error("Greška pri proveri turnira:", err);
+      console.error("Greška pri proveri:", err);
     }
+  }
+
+  // Pokretanje novog turnira
+  if (startBtn) {
+    startBtn.addEventListener("click", async () => {
+      const checkedBoxes = document.querySelectorAll(".player-select-cb:checked");
+      const selectedPlayers = Array.from(checkedBoxes).map(cb => cb.value);
+
+      if (selectedPlayers.length < 2) {
+        alert("Moraš izabrati bar 2 igrača za turnir!");
+        return;
+      }
+
+      // Mešanje igrača
+      const shuffled = [...selectedPlayers].sort(() => 0.5 - Math.random());
+      const matches = [];
+      for (let i = 0; i < shuffled.length; i += 2) {
+        if (i + 1 < shuffled.length) {
+          matches.push({ player1: shuffled[i], player2: shuffled[i+1], score1: null, score2: null });
+        } else {
+          matches.push({ player1: shuffled[i], player2: "BYE", score1: null, score2: null });
+        }
+      }
+
+      try {
+        const { error } = await db.from("tournaments").insert([{
+          name: "Tournament " + new Date().toLocaleDateString('sr-RS'),
+          status: "active",
+          players: selectedPlayers,
+          bracket: matches
+        }]);
+
+        if (error) throw error;
+
+        alert("Turnir je uspešno pokrenut!");
+        checkActiveTournament();
+      } catch (err) {
+        alert("Greška pri pokretanju turnira: " + err.message);
+      }
+    });
   }
 });
